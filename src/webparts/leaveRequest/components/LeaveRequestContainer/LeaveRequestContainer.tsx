@@ -52,7 +52,7 @@ class LeaveRequestContainer extends React.Component<ILeaveRequestContainerProps,
                 <div className={styles.commandButtonsWrapper}>
                     <CommandButton
                         iconProps={{ iconName: 'add' }}
-                        text="Add"
+                        text="Add New Request"
                         style={{ flexGrow: 8, paddingRight: 10 }}
                         disabled={false}
                         onClick={(ev: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {

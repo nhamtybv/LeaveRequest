@@ -12,6 +12,7 @@ interface INewRequestState {
     remainLeaveDays:number;
     leaveType:string|number;
     refId:number;
+    tempLeaves:number;
 }
 
 export default INewRequestState;

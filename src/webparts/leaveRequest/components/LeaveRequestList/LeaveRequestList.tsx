@@ -9,6 +9,8 @@ import {
 } from 'office-ui-fabric-react';
 import ILeaveRequestListProps from './ILeaveRequestListProps';
 import ILeaveRequestListState from './ILeaveRequestListState';
+import ILeaveRequestItem from '../../models/ILeaveRequestItem';
+import * as moment from 'moment';
 
 
 class LeaveRequestList extends React.Component<ILeaveRequestListProps, ILeaveRequestListState> {
@@ -54,6 +56,18 @@ class LeaveRequestList extends React.Component<ILeaveRequestListProps, ILeaveReq
                 name: 'Title',
                 fieldName: 'Title',
                 minWidth: 100,
+                maxWidth: 250,
+                isResizable: true,
+                isSorted: false,
+                isSortedDescending: false,
+                data: String
+            },
+            {
+                key: 'LeaveType',
+                name: 'LeaveType',
+                fieldName: 'LeaveType',
+                minWidth: 100,
+                maxWidth: 110,
                 isResizable: true,
                 isSorted: false,
                 isSortedDescending: false,
@@ -63,21 +77,27 @@ class LeaveRequestList extends React.Component<ILeaveRequestListProps, ILeaveReq
                 key: 'StartDate',
                 name: 'StartDate',
                 fieldName: 'StartDate',
-                minWidth: 120,
+                minWidth: 100,
                 isResizable: true,
                 isSorted: false,
                 isSortedDescending: false,
-                data: String
+                data: String,
+                onRender: (item: ILeaveRequestItem) => {
+                    return <span>{moment(item.StartDate).format('L')}</span>;
+                }
             },
             {
                 key: 'EndDate',
                 name: 'EndDate',
                 fieldName: 'EndDate',
-                minWidth: 120,
+                minWidth: 100,
                 isResizable: true,
                 isSorted: false,
                 isSortedDescending: false,
-                data: String
+                data: String,
+                onRender: (item: ILeaveRequestItem) => {
+                    return <span>{moment(item.EndDate).format('L')}</span>;
+                }
             },
             {
                 key: 'Status',

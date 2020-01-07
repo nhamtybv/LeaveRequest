@@ -56,7 +56,9 @@ const DayPickerStrings: IDatePickerStrings = {
     nextMonthAriaLabel: 'Go to next month',
     prevYearAriaLabel: 'Go to previous year',
     nextYearAriaLabel: 'Go to next year',
-    closeButtonAriaLabel: 'Close date picker'
+    closeButtonAriaLabel: 'Close date picker',
+    isRequiredErrorMessage: 'Field is required.',
+    invalidInputErrorMessage: 'Invalid date format.'
 };
 
 const textFieldStylesdatePicker: ITextFieldProps = {
@@ -94,7 +96,8 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
             leaveDays: 0,
             remainLeaveDays:0,
             leaveType:'',
-            refId:0
+            refId:0,
+            tempLeaves:0
         };
 
         this._closeDialog = this._closeDialog.bind(this);
@@ -155,13 +158,15 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
     private _onLeaveTypeChange = async (event: React.FormEvent<HTMLDivElement>, leaveType: IDropdownOption) => {
         let _remainLeaves:number = 0;
         let _refId:number = 0;
+        let _tempLeave:number = 0;
         if (leaveType.key === 'Annual Leave') {   
             if (this._refData.length > 0) {
                 _remainLeaves = Math.round(this._refData[0].Remain) - this._refData[0].Temp;
                 _refId = this._refData[0].Id;
+                _tempLeave = this._refData[0].Temp;
             }
         }
-        this.setState({ leaveType: leaveType.key, remainLeaveDays: _remainLeaves, refId: _refId});        
+        this.setState({ leaveType: leaveType.key, remainLeaveDays: _remainLeaves, refId: _refId, tempLeaves: _tempLeave});        
     }
 
     private _getLeaveTypes = async () => {
@@ -177,12 +182,14 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
             }
             let _remainLeaves:number = 0;
             let _refId:number = 0;
+            let _tempLeave:number = 0;
             this._refData = await this.props.dataProvider.getRefData();
             if (this._refData.length > 0){
                 _remainLeaves = Math.round(this._refData[0].Remain) - this._refData[0].Temp;
                 _refId = this._refData[0].Id;
+                _tempLeave = this._refData[0].Temp;
             } 
-            this.setState({ leaveType: this._LeaveTypeOption[0].key, remainLeaveDays: _remainLeaves, refId: _refId });  
+            this.setState({ leaveType: this._LeaveTypeOption[0].key, remainLeaveDays: _remainLeaves, refId: _refId, tempLeaves: _tempLeave });  
 
         } catch (error) {
           this.setState({ hasError: true, errorMessage: error.message });
@@ -200,6 +207,12 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
             flag = false;
         } else if (this.state.title.length < 10){
             this.setState({hasError:true, errorMessage: 'Title too short.'});
+            flag = false;
+        } else if (this.state.startDate === ''){
+            this.setState({hasError:true, errorMessage: 'Start Date is invalid.'});
+            flag = false;
+        } else if (this.state.endDate === ''){
+            this.setState({hasError:true, errorMessage: 'End Date is invalid.'});
             flag = false;
         } else if (this.state.leaveDays < 0){
             this.setState({hasError:true, errorMessage: 'Start Date or End Date is invalid.'});
@@ -226,7 +239,7 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
             const result = await this.props.dataProvider.createItem(item);
             if (result == 201){
                 if (this.state.refId > 0) {
-                    const res = await this.props.dataProvider.updateLeaveQuota(this.state.refId, this.state.leaveDays);
+                    const res = await this.props.dataProvider.updateLeaveQuota(this.state.refId, this.state.leaveDays + this.state.tempLeaves);
                 }
                 
                 this.setState({ hideDialog: true });
