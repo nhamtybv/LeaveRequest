@@ -19,6 +19,7 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
     private _listItemEntityTypeName: string = undefined;
     private _leaveQuotaEntityTypeName: string = undefined;
     private _siteName:string = 'BackOffice';
+    private _curentUserId:number = 0;
 
     public set webPartContext(value: IWebPartContext) {
         this._webPartContext = value;
@@ -75,8 +76,12 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
 
     public async getItems(): Promise<ILeaveRequestItem[]> {
         let listTitle: string = 'Leave Request';
-        let queryUrl: string = `${this._listsUrl}/GetByTitle('${listTitle}')/items?$orderby=Id desc`;
-
+        if (this._curentUserId === 0) {
+            let _currentProfile: IUserProfile = await this.getProfile();
+            this._curentUserId = _currentProfile.Id;
+        }
+        let queryUrl: string = `${this._listsUrl}/GetByTitle('${listTitle}')/items?$filter=AuthorId eq ${this._curentUserId}&$orderby=Id desc`;
+ 
         const response = await this._webPartContext.spHttpClient.get(queryUrl, SPHttpClient.configurations.v1);
         const json = await response.json();
         // console.log(json);

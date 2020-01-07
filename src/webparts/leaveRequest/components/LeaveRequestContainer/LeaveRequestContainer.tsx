@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './LeaveRequestContainer.module.scss';
-import { Fabric, CommandButton } from 'office-ui-fabric-react';
+import { Fabric, CommandButton, Spinner, SpinnerSize, IIconProps } from 'office-ui-fabric-react';
 import ILeaveRequestContainerProps from './ILeaveRequestContainerProps';
 import ILeaveRequestContainerState from './ILeaveRequestContainerState';
 import LeaveRequestList from '../LeaveRequestList/LeaveRequestList';
@@ -8,12 +8,14 @@ import ILeaveRequestItem from '../../models/ILeaveRequestItem';
 import NewRequest from '../NewRequest/NewRequest';
 import IUserProfile from '../../models/IUserProfile';
 
+const filterIcon: IIconProps = { iconName: 'Filter' };
 class LeaveRequestContainer extends React.Component<ILeaveRequestContainerProps, ILeaveRequestContainerState> {
     constructor(props:ILeaveRequestContainerProps){
         super(props);
         this.state = {
             leaveRequestItems: [],
-            showDialog:false
+            showDialog:false,
+            isLoading:true
         };
 
         this._loadItem= this._loadItem.bind(this);
@@ -24,7 +26,7 @@ class LeaveRequestContainer extends React.Component<ILeaveRequestContainerProps,
     private _loadItem(): void{
         this.props.dataProvider.getItems().then(
         (items: ILeaveRequestItem[]) => {
-            this.setState({ leaveRequestItems: items });
+            this.setState({ leaveRequestItems: items, isLoading: false });
         });
     }
 
@@ -48,25 +50,36 @@ class LeaveRequestContainer extends React.Component<ILeaveRequestContainerProps,
     public render(): JSX.Element {
         return (
             <div className={styles.leaveRequest}>
-            <Fabric>
-                <div className={styles.commandButtonsWrapper}>
-                    <CommandButton
-                        iconProps={{ iconName: 'add' }}
-                        text="Add New Request"
-                        style={{ flexGrow: 8, paddingRight: 10 }}
-                        disabled={false}
-                        onClick={(ev: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
-                            this.setState({ showDialog: true });
-                        }}
-                    />
-                </div>
-                <LeaveRequestList items={this.state.leaveRequestItems} />
-                {this.state.showDialog && (
-                  <NewRequest displayDialog={this.state.showDialog} 
-                            onDismiss={this._onDismissDialog}
-                            dataProvider={this.props.dataProvider}/>
-                )}
-            </Fabric>
+                {
+                    this.state.isLoading ? (
+                        <Spinner size={SpinnerSize.medium}></Spinner>
+                    ) : (
+                        <>
+                            <Fabric>
+                                <div className={styles.commandButtonsWrapper}>
+                                    <CommandButton
+                                        iconProps={{ iconName: 'add' }}
+                                        text="Add New Request"
+                                        style={{ flexGrow: 8, paddingRight: 10 }}
+                                        disabled={false}
+                                        onClick={(ev: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+                                            this.setState({ showDialog: true });
+                                        }}
+                                    />
+                                </div>
+                                <LeaveRequestList items={this.state.leaveRequestItems} />
+                                {
+                                    this.state.showDialog && (
+                                        <NewRequest displayDialog={this.state.showDialog} 
+                                                    onDismiss={this._onDismissDialog}
+                                                    dataProvider={this.props.dataProvider}/>
+                                    )
+                                }
+                    </Fabric>
+                    </>
+                    )
+                }
+            
             </div>
         );
     }

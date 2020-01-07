@@ -218,8 +218,10 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
             this.setState({hasError:true, errorMessage: 'Start Date or End Date is invalid.'});
             flag = false;
         } else if (this.state.leaveDays > this.state.remainLeaveDays){
-            this.setState({hasError:true, errorMessage: `You can not leave more than ${this.state.remainLeaveDays}.`});
-            flag = false;
+            if (this.state.leaveType === 'Annual Leave'){
+                this.setState({hasError:true, errorMessage: `You can not leave more than ${this.state.remainLeaveDays}.`});
+                flag = false;
+            }
         }
         return flag;
     }
