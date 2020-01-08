@@ -6,6 +6,7 @@ import { IWebPartContext } from "@microsoft/sp-webpart-base";
 import ILeaveTypeItem from "../models/ILeaveTypeItem";
 import IRefDataItem from "../models/IRefDataItem";
 import IUserProfile from "../models/IUserProfile";
+import IReportSummaryItem from "../models/IReportSummaryItem";
 
 class MockDataProvider implements ILeaveRequestDataProvider {
     private _idCounter: number;
@@ -85,6 +86,13 @@ class MockDataProvider implements ILeaveRequestDataProvider {
     public updateLeaveQuota(id:number, amount:number):Promise<number>{
         return new Promise<number>((resolve) => {
             resolve(1);
+        });
+    }
+
+    public getReportSummary():Promise<IReportSummaryItem[]>{
+        return new Promise<IReportSummaryItem[]>((resolve) => {
+            let items:IReportSummaryItem[];
+            resolve(items);
         });
     }
 }

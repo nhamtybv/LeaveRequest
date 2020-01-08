@@ -13,6 +13,7 @@ export interface IUserProfile {
 export interface IUserProfile {
     Id:number;     
     Email: string;  
-    Title: string;     
+    Title: string;
+    IsSiteAdmin:boolean; 
 }
 export default IUserProfile;

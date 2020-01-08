@@ -27,14 +27,22 @@ class LeaveRequestList extends React.Component<ILeaveRequestListProps, ILeaveReq
 
     public render(): JSX.Element {
         return (
-            <MarqueeSelection selection={this._selection}>
-                <DetailsList                    
-                    items={this.props.items}
-                    columns={this.state.columns}
-                    selectionMode={SelectionMode.single}
-                    layoutMode={DetailsListLayoutMode.justified}
-                    selection={this._selection}/>
-            </MarqueeSelection>
+            <div>
+            {this.props.items.length === 0 ? (
+                <p>No data found</p>
+            ) :(
+                <>
+                    <MarqueeSelection selection={this._selection}>
+                        <DetailsList                    
+                            items={this.props.items}
+                            columns={this.state.columns}
+                            selectionMode={SelectionMode.single}
+                            layoutMode={DetailsListLayoutMode.justified}
+                            selection={this._selection}/>
+                    </MarqueeSelection>
+                </>
+            )}
+            </div>
         );
     }
 

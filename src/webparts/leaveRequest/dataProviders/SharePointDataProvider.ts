@@ -9,6 +9,7 @@ import {
 import ILeaveTypeItem from "../models/ILeaveTypeItem";
 import IRefDataItem from '../models/IRefDataItem';
 import IUserProfile from '../models/IUserProfile';
+import IReportSummaryItem from '../models/IReportSummaryItem';
 
 class SharePointDataProvider implements ILeaveRequestDataProvider {
     private _items: ILeaveRequestItem[];
@@ -96,7 +97,7 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
 
         const response = await this._webPartContext.spHttpClient.get(queryUrl, SPHttpClient.configurations.v1);
         const json = await response.json();
-        // console.log(json);
+        //console.log(json);
         return this._refDataItem = json.value;
     }
 
@@ -168,7 +169,23 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
         // console.log(response);
         return response.status;
     }
-}
 
+    public async getReportSummary():Promise<IReportSummaryItem[]>{
+        let listTitle: string = 'leave_quota';
+        let myEmail: string = this._webPartContext.pageContext.user.email;
+        let selectStatement:string = 'Id, Employee/Name, Employee/FirstName, Employee/LastName, Employee/EMail, Quota, Used, Remain, Temp';
+        let filterStatement:string = `&$filter=Employee/EMail eq '${myEmail}'`;
+        let myProfile:IUserProfile = await this.getProfile();
+        
+        if (myProfile.IsSiteAdmin) {
+            filterStatement = '';
+        }
+        let queryUrl: string = `${this._listsUrl}/GetByTitle('${listTitle}')/items?$select=${selectStatement}&$expand=Employee${filterStatement}`;
+        const response = await this._webPartContext.spHttpClient.get(queryUrl, SPHttpClient.configurations.v1);
+        const json = await response.json();
+        //console.log(json);
+        return this._refDataItem = json.value;
+    }
+}
 
 export default SharePointDataProvider;
