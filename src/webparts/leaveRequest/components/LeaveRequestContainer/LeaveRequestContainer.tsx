@@ -113,6 +113,7 @@ class LeaveRequestContainer extends React.Component<ILeaveRequestContainerProps,
     public render(): JSX.Element {
         return (
             <div className={styles.leaveRequest}>
+                <div className={styles.container}>
                 {     
                     this.state.isLoading ? (
                         <Spinner size={SpinnerSize.medium}></Spinner>
@@ -184,6 +185,7 @@ class LeaveRequestContainer extends React.Component<ILeaveRequestContainerProps,
                         </>
                     )
                 }
+                </div>
             </div>
         );
     }

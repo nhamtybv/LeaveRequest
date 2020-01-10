@@ -42,9 +42,9 @@ class LeaveReport extends React.Component<ILeaveReqortProps, ILeaveReportState> 
                         <>
                             <div>
                             {((this.props.reportSummary === undefined) || (this.props.reportSummary.length === 0)) ? (
-                                <MessageBar messageBarType={MessageBarType.error}>
-                                    No data found.
-                                </MessageBar>
+                                    <MessageBar messageBarType={MessageBarType.error}>
+                                        No data found.
+                                    </MessageBar>
                             ) :(
                                 <>
                                     <MarqueeSelection selection={this._selection}>
