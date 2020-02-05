@@ -24,6 +24,7 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
 
     public set webPartContext(value: IWebPartContext) {
         this._webPartContext = value;
+        this._listsUrl = `${this._webPartContext.pageContext.web.absoluteUrl}/_api/web/lists`;
     }
     
     public set siteName(value: string) {
@@ -185,6 +186,29 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
         const json = await response.json();
         //console.log(json);
         return this._refDataItem = json.value;
+    }
+
+    public async getPublicHolidays(fd:Date, td:Date):Promise<number>{
+        let listTitle: string = 'CalendarEvents';
+        let filter:string = `?$filter=Category eq 'Holiday' and EventDate ge datetime'${moment(fd).format('YYYY-MM-DD')}T00:00:00.000Z' and EventDate le datetime'${moment(td).format('YYYY-MM-DD')}T23:59:00.000Z'` ;
+        let queryUrl: string = `${this._listsUrl}/GetByTitle('${listTitle}')/items${filter}'`;
+        
+        const response = await this._webPartContext.spHttpClient.get(queryUrl, SPHttpClient.configurations.v1);
+        const json = await response.json();
+        let result:number = 0;
+        const items = json.value;
+        console.log(queryUrl);
+        console.log(items);
+        if (items.length > 0) {
+            items.map((item:any) =>{
+                let n:number = moment(item.EventDate).diff(moment(item.EndDate), 'days');
+                console.log(n);
+                n += 1;
+                result += n;
+            });
+        }
+        console.log(result);
+        return result;
     }
 }
 

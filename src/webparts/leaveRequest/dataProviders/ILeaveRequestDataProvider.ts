@@ -15,6 +15,7 @@ interface ILeaveRequestDataProvider {
     createItem(item:ILeaveRequestItem): Promise<number>;
     updateLeaveQuota(id:number, amount:number):Promise<number>;
     getReportSummary():Promise<IReportSummaryItem[]>;
+    getPublicHolidays(fd:Date, td:Date):Promise<number>;
 }
 
 export default ILeaveRequestDataProvider;

@@ -127,9 +127,9 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
         return [(mm > 9 ? '' : '0') + mm, (dd > 9 ? '' : '0') + dd, yy].join('/');
     }
 
-    private _onSelectStartDate = (date: Date | null | undefined): void => {
+    private _onSelectStartDate = async (date: Date | null | undefined): Promise<void> => {
         let ed:Date = (this.state.endDate === '' ? date : moment(this.state.endDate, 'MM/DD/YYYY').toDate());
-        let ld:number = this._getDaysBetween(date, ed);
+        let ld:number = await this._getDaysBetween(date, ed);
         if (ld < 0) {
             this.setState({ hasError: true, errorMessage: "End Date should greater than Start Date.", leaveDays: -1 });
         } else {
@@ -137,9 +137,9 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
         }
     }
 
-    private _onSelectEndDate = (date: Date | null | undefined): void => {
+    private _onSelectEndDate = async (date: Date | null | undefined): Promise<void> => {
         let sd:Date = (this.state.startDate === '' ? date : moment(this.state.startDate, 'MM/DD/YYYY').toDate());
-        let ld:number = this._getDaysBetween(sd, date);
+        let ld:number = await this._getDaysBetween(sd, date);
         if (ld < 0) {
             this.setState({ hasError: true, errorMessage: "End Date should greater than Start Date.", leaveDays: -1 });
         } else {
@@ -264,7 +264,7 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
         });
     }
     
-    private _getDaysBetween(startDate:Date, endDate:Date):number {
+    private async _getDaysBetween(startDate:Date, endDate:Date):Promise<number> {
         let res:number = 0;
         let wds:number = 0;
         let adj:number = 0;
@@ -279,6 +279,7 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
         if (startDate.getDay() === 6) adj = 2;
         sdate = moment(startDate).add(adj, 'days').toDate();
 
+        adj = 0;
         if (endDate.getDay() === 0) adj = -2;
         if (endDate.getDay() === 6) adj = -1;
         edate = moment(endDate).add(adj, 'days').toDate();
@@ -298,8 +299,13 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
                 } 
             }
         }
+        console.log(sdate);
+        console.log(edate);
         
-        res = wds + 1;
+        const hds = await this.props.dataProvider.getPublicHolidays(startDate, endDate);
+               
+        res = wds + 1 - hds;
+        console.log(res);
         return res;
     }
 

@@ -95,6 +95,12 @@ class MockDataProvider implements ILeaveRequestDataProvider {
             resolve(items);
         });
     }
+
+    public getPublicHolidays(fd:Date, td:Date):Promise<number>{
+        return new Promise<number>((resolve) => {
+            resolve(1);
+        });
+    }
 }
 
 export default MockDataProvider;

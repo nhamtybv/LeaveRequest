@@ -1,5 +1,4 @@
 import ILeaveRequestItem from "../../models/ILeaveRequestItem";
-import IUserProfile from "../../models/IUserProfile";
 import IReportSummaryItem from "../../models/IReportSummaryItem";
 import IReportDetailItem from "../../models/IReportDetailItem";
 
