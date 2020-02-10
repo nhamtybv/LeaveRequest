@@ -1,3 +1,5 @@
+import ILeaveTypeItem from "./ILeaveTypeItem";
+
 interface IRefDataItem {
     Id:number;
     Title:string;
@@ -7,6 +9,7 @@ interface IRefDataItem {
     Used:number;
     Temp:number;
     Etag:string;
+    LeaveType: ILeaveTypeItem;
 }
 
 export default IRefDataItem;

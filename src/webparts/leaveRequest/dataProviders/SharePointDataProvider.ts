@@ -53,8 +53,8 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
                 'type': listItemEntityTypeName
             },
             'Title': item.Title,
-            'StartDate': item.StartDate?moment(item.StartDate,'MM/DD/YYYY').toISOString() : undefined,
-            'EndDate': item.EndDate?moment(item.EndDate,'MM/DD/YYYY').toISOString() : undefined,
+            'StartDate': item.StartDate? `${moment(item.StartDate).format('YYYY-MM-DD')}T00:00:00.000Z`: undefined,
+            'EndDate': item.EndDate? `${moment(item.EndDate).format('YYYY-MM-DD')}23:59:00.000Z`: undefined,
             'Status': item.Status,
             'Comment':item.Comment,
             'RefID':item.RefID,
@@ -93,12 +93,12 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
     public async getRefData():Promise<IRefDataItem[]>{
         let listTitle: string = 'leave_quota';
         let myEmail: string = this._webPartContext.pageContext.user.email;
-        let selectStatement:string = 'Id, Employee/EMail, Quota, Used, Remain, Temp';
-        let queryUrl: string = `${this._listsUrl}/GetByTitle('${listTitle}')/items?$select=${selectStatement}&$expand=Employee&$filter=Employee/EMail eq '${myEmail}'`;
+        let selectStatement:string = 'Id, Employee/EMail, Quota, Used, Remain, Temp, LeaveType/Title';
+        let queryUrl: string = `${this._listsUrl}/GetByTitle('${listTitle}')/items?$select=${selectStatement}&$expand=Employee,LeaveType&$filter=Employee/EMail eq '${myEmail}'`;
 
         const response = await this._webPartContext.spHttpClient.get(queryUrl, SPHttpClient.configurations.v1);
         const json = await response.json();
-        //console.log(json);
+       
         return this._refDataItem = json.value;
     }
 
@@ -197,8 +197,7 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
         const json = await response.json();
         let result:number = 0;
         const items = json.value;
-        console.log(queryUrl);
-        console.log(items);
+        
         if (items.length > 0) {
             items.map((item:any) =>{
                 let n:number = moment(item.EventDate).diff(moment(item.EndDate), 'days');
@@ -207,7 +206,7 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
                 result += n;
             });
         }
-        console.log(result);
+        
         return result;
     }
 }

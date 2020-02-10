@@ -159,13 +159,15 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
         let _remainLeaves:number = 0;
         let _refId:number = 0;
         let _tempLeave:number = 0;
-        if (leaveType.key === 'Annual Leave') {   
+        //let _tempData: IRefDataItem[] = this._refData.filter(item => item.)
+        //if (leaveType.key === 'Annual Leave') {   
             if (this._refData.length > 0) {
-                _remainLeaves = Math.round(this._refData[0].Remain) - this._refData[0].Temp;
-                _refId = this._refData[0].Id;
-                _tempLeave = this._refData[0].Temp;
+                let _tempData: IRefDataItem[] = this._refData.filter(item => item.LeaveType.Title === leaveType.key);
+                _remainLeaves = Math.round(_tempData[0].Remain) - _tempData[0].Temp;
+                _refId = _tempData[0].Id;
+                _tempLeave = _tempData[0].Temp;
             }
-        }
+        //}
         this.setState({ leaveType: leaveType.key, remainLeaveDays: _remainLeaves, refId: _refId, tempLeaves: _tempLeave});        
     }
 
@@ -185,9 +187,10 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
             let _tempLeave:number = 0;
             this._refData = await this.props.dataProvider.getRefData();
             if (this._refData.length > 0){
-                _remainLeaves = Math.round(this._refData[0].Remain) - this._refData[0].Temp;
-                _refId = this._refData[0].Id;
-                _tempLeave = this._refData[0].Temp;
+                let _tempData: IRefDataItem[] = this._refData.filter(item => item.LeaveType.Title === 'Annual Leave');
+                _remainLeaves = Math.round(_tempData[0].Remain) - _tempData[0].Temp;
+                _refId = _tempData[0].Id;
+                _tempLeave = _tempData[0].Temp;
             } 
             this.setState({ leaveType: this._LeaveTypeOption[0].key, remainLeaveDays: _remainLeaves, refId: _refId, tempLeaves: _tempLeave });  
 
@@ -218,10 +221,10 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
             this.setState({hasError:true, errorMessage: 'Start Date or End Date is invalid.'});
             flag = false;
         } else if (this.state.leaveDays > this.state.remainLeaveDays){
-            if (this.state.leaveType === 'Annual Leave'){
+            //if (this.state.leaveType === 'Annual Leave'){
                 this.setState({hasError:true, errorMessage: `You can not leave more than ${this.state.remainLeaveDays}.`});
                 flag = false;
-            }
+            //}
         }
         return flag;
     }
@@ -284,7 +287,7 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
         if (endDate.getDay() === 6) adj = -1;
         edate = moment(endDate).add(adj, 'days').toDate();
 
-        if (edate < sdate) return -1;
+        if (edate < sdate) edate = sdate;
         wds = moment(edate).diff(moment(sdate), 'days');
         swk = moment(sdate).isoWeek();
         ewk = moment(edate).isoWeek();
@@ -299,13 +302,10 @@ export default class NewRequest extends React.Component<INewRequestProps, INewRe
                 } 
             }
         }
-        console.log(sdate);
-        console.log(edate);
         
-        const hds = await this.props.dataProvider.getPublicHolidays(startDate, endDate);
+        const hds = await this.props.dataProvider.getPublicHolidays(sdate, edate);
                
         res = wds + 1 - hds;
-        console.log(res);
         return res;
     }
 
