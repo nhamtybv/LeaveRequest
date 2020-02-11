@@ -53,8 +53,8 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
                 'type': listItemEntityTypeName
             },
             'Title': item.Title,
-            'StartDate': item.StartDate? `${moment(item.StartDate).format('YYYY-MM-DD')}T00:00:00.000Z`: undefined,
-            'EndDate': item.EndDate? `${moment(item.EndDate).format('YYYY-MM-DD')}23:59:00.000Z`: undefined,
+            'StartDate': item.StartDate? moment(item.StartDate).format('YYYY-MM-DD').concat('T08:00:00.000Z'): undefined,
+            'EndDate': item.EndDate? moment(item.EndDate).format('YYYY-MM-DD').concat('T08:00:00.000Z'): undefined,
             'Status': item.Status,
             'Comment':item.Comment,
             'RefID':item.RefID,
@@ -62,7 +62,6 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
             'LeaveType': item.LeaveType
         });
 
-        
         let queryUrl: string = `${this._listsUrl}/getbytitle('${listTitle}')/items`;
         const response = await this._webPartContext.spHttpClient.post(queryUrl, SPHttpClient.configurations.v1,
                 {
@@ -201,7 +200,7 @@ class SharePointDataProvider implements ILeaveRequestDataProvider {
         if (items.length > 0) {
             items.map((item:any) =>{
                 let n:number = moment(item.EventDate).diff(moment(item.EndDate), 'days');
-                console.log(n);
+                //console.log(n);
                 n += 1;
                 result += n;
             });
